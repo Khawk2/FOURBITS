@@ -55,6 +55,12 @@ body {
     color: var(--primary-color);
     font-size: 28px;
     font-weight: 700;
+    transition: var(--transition);
+}
+
+.logo h2:hover {
+    color: #1e5a96;
+    transform: translateX(2px);
 }
 
 .nav-menu {
