@@ -59,9 +59,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Formulario de contacto
+// Inicializar EmailJS
+(function() {
+    emailjs.init("15R0MVV2_3nCfCc17"); // Reemplaza con tu clave pública de EmailJS
+})();
+
+// Formulario de contacto con EmailJS
 document.addEventListener('DOMContentLoaded', function() {
-    const contactForm = document.querySelector('.contact-form form');
+    const contactForm = document.getElementById('contact-form');
     
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
@@ -69,33 +74,104 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Obtener datos del formulario
             const formData = new FormData(contactForm);
-            const name = contactForm.querySelector('input[type="text"]').value;
-            const email = contactForm.querySelector('input[type="email"]').value;
-            const company = contactForm.querySelector('input[placeholder="Empresa"]').value;
-            const message = contactForm.querySelector('textarea').value;
+            const name = formData.get('user_name');
+            const email = formData.get('user_email');
+            const company = formData.get('user_company');
+            const message = formData.get('message');
             
             // Validación básica
             if (!name || !email || !message) {
-                alert('Por favor, completa todos los campos obligatorios.');
+                showMessage('Por favor, completa todos los campos obligatorios.', 'error');
                 return;
             }
             
-            // Simular envío del formulario
+            // Validar email
+            if (!validateEmail(email)) {
+                showMessage('Por favor, ingresa un email válido.', 'error');
+                return;
+            }
+            
+            // Configurar el botón de envío
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             
             submitBtn.textContent = 'Enviando...';
             submitBtn.disabled = true;
             
-            setTimeout(() => {
-                alert('¡Mensaje enviado correctamente! Te contactaremos pronto.');
-                contactForm.reset();
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }, 2000);
+            // Configurar parámetros para EmailJS
+            const templateParams = {
+                from_name: name,
+                from_email: email,
+                company: company || 'No especificada',
+                message: message,
+                to_email: 'fourbits.software@gmail.com' // Tu email de destino
+            };
+            
+            // Enviar email usando EmailJS
+            emailjs.send('service_f7f7thl', 'template_bmnpl2r', templateParams)
+                .then(function(response) {
+                    console.log('Email enviado exitosamente!', response.status, response.text);
+                    showMessage('¡Mensaje enviado correctamente! Te contactaremos pronto.', 'success');
+                    contactForm.reset();
+                }, function(error) {
+                    console.error('Error al enviar email:', error);
+                    showMessage('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo o contáctanos directamente.', 'error');
+                })
+                .finally(function() {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                });
         });
     }
 });
+
+// Función para mostrar mensajes al usuario
+function showMessage(message, type) {
+    // Crear elemento de mensaje
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+    messageDiv.textContent = message;
+    
+    // Estilos para el mensaje
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+    
+    if (type === 'success') {
+        messageDiv.style.backgroundColor = '#27ae60';
+    } else if (type === 'error') {
+        messageDiv.style.backgroundColor = '#e74c3c';
+    }
+    
+    // Agregar al DOM
+    document.body.appendChild(messageDiv);
+    
+    // Animar entrada
+    setTimeout(() => {
+        messageDiv.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remover después de 5 segundos
+    setTimeout(() => {
+        messageDiv.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
+        }, 300);
+    }, 5000);
+}
 
 // Smooth scroll para enlaces internos
 document.addEventListener('DOMContentLoaded', function() {
