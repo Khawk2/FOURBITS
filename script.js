@@ -294,3 +294,43 @@ function createParticles() {
 
 // Inicializar partículas
 document.addEventListener('DOMContentLoaded', createParticles);
+
+// Modal para imagen ampliada del portafolio
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const closeBtn = document.querySelector('.close');
+    const portfolioImgs = document.querySelectorAll('.portfolio-img');
+    
+    // Abrir modal al hacer clic en imagen del portafolio
+    portfolioImgs.forEach(img => {
+        img.addEventListener('click', function() {
+            modal.style.display = 'block';
+            modalImg.src = this.src;
+            modalImg.alt = this.alt;
+            document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        });
+    });
+    
+    // Cerrar modal al hacer clic en X
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restaurar scroll del body
+    });
+    
+    // Cerrar modal al hacer clic fuera de la imagen
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restaurar scroll del body
+        }
+    });
+    
+    // Cerrar modal con tecla Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restaurar scroll del body
+        }
+    });
+});
