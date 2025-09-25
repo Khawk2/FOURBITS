@@ -391,10 +391,10 @@ body {
 
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: 30px;
     justify-content: center;
-    max-width: 400px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -649,6 +649,7 @@ body {
     
     .portfolio-grid {
         grid-template-columns: 1fr;
+        max-width: 500px;
     }
     
     .hero-buttons {
